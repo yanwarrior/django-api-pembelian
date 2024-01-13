@@ -1,4 +1,4 @@
-from pembelian.repositories import PembayaranRepository
+from pembelian.repositories import PembayaranRepository, ItemRepository
 
 
 class PembayaranService:
@@ -11,3 +11,11 @@ class PembayaranService:
 
     def update_pembayaran(self, pembayaran):
         return self.repository.update_pembayaran(pembayaran)
+
+
+class ItemService:
+    def __init__(self):
+        self.repository = ItemRepository()
+
+    def get_subtotal(self, item):
+        return self.repository.get_subtotal(item)

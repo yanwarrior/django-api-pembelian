@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from pembelian.models import Pembelian, Pembayaran
+from pembelian.models import Pembelian, Pembayaran, Item
 
 
 class PembelianSerializer(serializers.ModelSerializer):
@@ -21,3 +21,12 @@ class PembayaranSerializer(serializers.ModelSerializer):
         read_only_fields = ['nomor', 'pembelian', 'metode',
                             'total', 'is_paid', 'kembali',
                             'sisa']
+
+
+class ItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = ['id', 'barang', 'pembelian',
+                  'diskon', 'harga_supplier', 'jumlah',
+                  'subtotal', 'keterangan']
+        read_only_fields = ['subtotal',]

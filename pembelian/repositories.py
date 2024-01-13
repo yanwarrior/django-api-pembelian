@@ -51,11 +51,11 @@ class PembayaranRepository:
         # jika sisa >= 0
         return sisa
 
-    def get_paid_pembayaran(self, sisa, total):
+    def get_paid_pembayaran(self, total):
         if total == 0:
             return True
 
-        if sisa > 0:
+        if total > 0:
             return True
         return False
 
@@ -71,7 +71,7 @@ class PembayaranRepository:
         total = self.get_total_item(pembayaran)
         kembali = self.get_kembali_pembayaran(pembayaran, total)
         sisa = self.get_sisa_pembayaran(pembayaran, total)
-        is_paid = self.get_paid_pembayaran(sisa, total)
+        is_paid = self.get_paid_pembayaran(total)
         metode = self.get_metode_pembayaran(sisa, total)
 
         pembayaran.total = total
@@ -80,3 +80,12 @@ class PembayaranRepository:
         pembayaran.is_paid = is_paid
         pembayaran.metode = metode
         return pembayaran.save()
+
+
+class ItemRepository:
+
+    def get_subtotal(self, item):
+        subtotal = (item['harga_supplier'] - item['diskon']) * item['jumlah']
+        return subtotal if subtotal >= 0 else 0
+
+
