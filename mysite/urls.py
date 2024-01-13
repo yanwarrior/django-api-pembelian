@@ -10,6 +10,7 @@ urlpatterns = [
     path('auth/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('barang/', include('barang.urls', namespace='barang')),
+    path('supplier/', include('supplier.urls', namespace='supplier')),
 ]
 
 # urlpatterns += router.urls
