@@ -27,23 +27,13 @@ class Pembayaran(models.Model):
     metode = models.CharField(max_length=100, choices=METODE_PEMBELIAN, default=TUNAI)
     diskon = models.PositiveIntegerField()
     ppn = models.PositiveIntegerField()
-    total_ppn_discount = models.PositiveIntegerField()
     total = models.PositiveIntegerField()
     is_paid = models.BooleanField(default=False)
 
     dibayar = models.PositiveIntegerField()
     kembali = models.PositiveIntegerField()
-
-    def __str__(self):
-        return self.pembelian.nomor
-
-
-class Hutang(models.Model):
-    nomor = models.CharField(max_length=10, unique=True)
-    pembelian = models.OneToOneField(Pembelian, on_delete=models.CASCADE, related_name='get_hutang_pembelian')
-    pembayaran = models.OneToOneField(Pembayaran, on_delete=models.CASCADE, related_name='get_hutang_pembayaran')
-    tempo = models.PositiveIntegerField()
-    sisa = models.PositiveIntegerField()
+    sisa = models.PositiveIntegerField(default=0)
+    tempo = models.PositiveIntegerField(default=1)
 
     def __str__(self):
         return self.pembelian.nomor

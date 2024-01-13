@@ -1,5 +1,5 @@
 from django.db import transaction
-from django.shortcuts import render
+from django.http import Http404
 from rest_framework import status
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.pagination import PageNumberPagination
@@ -7,8 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from pembelian.filters import PembelianFilter
-from pembelian.models import Pembelian
-from pembelian.serializers import PembelianSerializer
+from pembelian.models import Pembelian, Pembayaran
+from pembelian.serializers import PembelianSerializer, PembayaranSerializer
 from pembelian.services import PembayaranService
 
 
@@ -37,4 +37,48 @@ def pembelian_list(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
+@transaction.atomic
+def pembelian_detail(request, pk):
+    try:
+        pembelian = Pembelian.objects.get(pk=pk)
+    except Pembelian.DoesNotExist:
+        raise Http404
+
+    if request.method == 'GET':
+        serializer = PembelianSerializer(pembelian)
+        return Response(serializer.data)
+
+    if request.method == 'PUT':
+        serializer = PembelianSerializer(pembelian, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
+@transaction.atomic
+def pembayaran_detail(request, pk):
+    try:
+        pembayaran = Pembayaran.objects.get(pembelian__pk=pk)
+    except Pembelian.DoesNotExist:
+        raise Http404
+
+    if request.method == 'GET':
+        serializer = PembayaranSerializer(pembayaran)
+        return Response(serializer.data)
+
+    if request.method == 'PUT':
+        serializer = PembayaranSerializer(pembayaran, data=request.data)
+        if serializer.is_valid():
+            instance = serializer.save()
+            # Setelah pembayaran disimpan, update juga bagian
+            # seperti metode, total, is_paid, dll...
+            PembayaranService().update_pembayaran(instance)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
