@@ -11,6 +11,7 @@ urlpatterns = [
     path('auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('barang/', include('barang.urls', namespace='barang')),
     path('supplier/', include('supplier.urls', namespace='supplier')),
+    path('pembelian/', include('pembelian.urls', namespace='pembelian')),
 ]
 
 # urlpatterns += router.urls

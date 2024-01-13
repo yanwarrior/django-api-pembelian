@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'barang.apps.BarangConfig',
     'supplier.apps.SupplierConfig',
+    'pembelian.apps.PembelianConfig',
 ]
 
 MIDDLEWARE = [
