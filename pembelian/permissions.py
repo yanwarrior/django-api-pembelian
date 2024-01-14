@@ -43,6 +43,7 @@ class AllowUnpublishedPermission(permissions.BasePermission):
 
 class PreventTunaiPermission(permissions.BasePermission):
     def has_permission(self, request, view):
+
         try:
             pk = view.kwargs.get('pk', None)
             pembayaran_pk = view.kwargs.get('pembayaran_pk', None)

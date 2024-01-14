@@ -5,6 +5,14 @@ from pembelian.models import Pembayaran, Item
 
 
 class PembayaranRepository:
+
+    def calculate_discount_ppn(self, diskon, ppn, total):
+        if total:
+            total_after_diskon = total - (total * (diskon / 100))
+            return total_after_diskon + (total_after_diskon * (ppn / 100))
+
+        return total
+
     def create_pembayaran_after_make_pembelian(self, pembelian):
         nomor_generator = generate_nomor("PBR", Pembayaran.objects.all())
         return Pembayaran.objects.create(pembelian=pembelian, nomor=nomor_generator,
@@ -21,12 +29,7 @@ class PembayaranRepository:
             for item in items:
                 total = total + item.subtotal
 
-        if total:
-            total_diskon = total * (pembayaran.diskon / 100)
-            total_ppn = total_diskon * (pembayaran.ppn / 100)
-            total = total_ppn + total_diskon
-
-        return total
+        return self.calculate_discount_ppn(pembayaran.diskon, pembayaran.ppn, total)
 
     def get_kembali_pembayaran(self, pembayaran, total):
         if total == 0:

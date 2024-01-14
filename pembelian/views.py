@@ -88,7 +88,7 @@ def pembelian_complete(request, pk):
 def pembayaran_detail(request, pk):
     try:
         pembayaran = Pembayaran.objects.get(pembelian__pk=pk)
-    except Pembelian.DoesNotExist:
+    except Pembayaran.DoesNotExist:
         raise Http404
 
     if request.method == 'GET':

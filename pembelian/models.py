@@ -3,10 +3,12 @@ from django.db import models
 from barang.models import Barang
 from supplier.models import Supplier
 
+
 class Pembelian(models.Model):
     nomor = models.CharField(max_length=10, unique=True)
     tanggal = models.DateTimeField()
-    supplier = models.ForeignKey(Supplier, related_name='populate_pembelian_supplier', on_delete=models.CASCADE)
+    supplier = models.ForeignKey(Supplier, related_name='populate_pembelian_supplier',
+                                 on_delete=models.CASCADE)
     is_published = models.BooleanField(default=False)
 
     def __str__(self):
@@ -22,8 +24,10 @@ class Pembayaran(models.Model):
     }
 
     nomor = models.CharField(max_length=10, unique=True)
-    pembelian = models.OneToOneField(Pembelian, on_delete=models.CASCADE, related_name='get_pembayaran_pembelian')
-    metode = models.CharField(max_length=100, choices=METODE_PEMBELIAN, default=TUNAI)
+    pembelian = models.OneToOneField(Pembelian, on_delete=models.CASCADE,
+                                     related_name='get_pembayaran_pembelian')
+    metode = models.CharField(max_length=100, choices=METODE_PEMBELIAN,
+                              default=TUNAI)
     diskon = models.PositiveIntegerField()
     ppn = models.PositiveIntegerField()
     total = models.PositiveIntegerField()
@@ -40,8 +44,10 @@ class Pembayaran(models.Model):
 
 
 class Item(models.Model):
-    barang = models.ForeignKey(Barang, on_delete=models.CASCADE, related_name='populate_item_barang')
-    pembelian = models.ForeignKey(Pembelian, on_delete=models.CASCADE, related_name='populate_item_pembelian')
+    barang = models.ForeignKey(Barang, on_delete=models.CASCADE,
+                               related_name='populate_item_barang')
+    pembelian = models.ForeignKey(Pembelian, on_delete=models.CASCADE,
+                                  related_name='populate_item_pembelian')
     diskon = models.PositiveIntegerField()
     harga_supplier = models.PositiveIntegerField()
     jumlah = models.PositiveIntegerField()

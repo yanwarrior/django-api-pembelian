@@ -3,9 +3,6 @@ from rest_framework import serializers
 from pembelian.models import Pembelian, Pembayaran, Item, Hutang
 
 
-
-
-
 class PembayaranSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pembayaran
@@ -42,24 +39,19 @@ class PembelianSerializer(serializers.ModelSerializer):
 
     def get_pembayaran(self, value: Pembelian):
         pembayaran = value.get_pembayaran_pembelian
-        return {
-            'id': pembayaran.id,
-            'nomor': pembayaran.nomor,
-            'metode': pembayaran.metode,
-            'diskon': pembayaran.diskon,
-            'ppn': pembayaran.ppn,
-            'total': pembayaran.total,
-            'is_paid': pembayaran.is_paid,
-            'dibayar': pembayaran.dibayar,
-            'kembali': pembayaran.kembali,
-            'sisa': pembayaran.sisa,
-            'tempo': pembayaran.tempo,
-            'tanggal_jatuh_tempo': pembayaran.tanggal_jatuh_tempo,
-            'hutang': pembayaran.hutang_set.all(),
-        }
+        return {'id': pembayaran.id, 'nomor': pembayaran.nomor,
+                'metode': pembayaran.metode, 'diskon': pembayaran.diskon,
+                'ppn': pembayaran.ppn, 'total': pembayaran.total,
+                'is_paid': pembayaran.is_paid, 'dibayar': pembayaran.dibayar,
+                'kembali': pembayaran.kembali, 'sisa': pembayaran.sisa,
+                'tempo': pembayaran.tempo, 'tanggal_jatuh_tempo': pembayaran.tanggal_jatuh_tempo,
+                'hutang': pembayaran.hutang_set.all()}
 
     class Meta:
         model = Pembelian
-        fields = ['id', 'nomor', 'tanggal',
-                  'supplier', 'is_published', 'meta_pembayaran']
+        fields = ['id', 'nomor',
+                  'tanggal', 'supplier',
+                  'is_published', 'meta_pembayaran']
         read_only_fields = ['is_published']
+
+
