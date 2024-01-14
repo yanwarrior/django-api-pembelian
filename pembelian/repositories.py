@@ -21,8 +21,9 @@ class PembayaranRepository:
                 total = total + item.subtotal
 
         if total:
-            total = total - pembayaran.diskon
-            total = total + (total * (pembayaran.ppn / 100))
+            total_diskon = total - pembayaran.diskon
+            total_ppn = total_diskon * (pembayaran.ppn / 100)
+            total = total_ppn + total_diskon
 
         return total
 
@@ -41,7 +42,7 @@ class PembayaranRepository:
         if total == 0:
             return 0
 
-        sisa = total - pembayaran.dibayar
+        sisa = pembayaran.dibayar - total
 
         if sisa < 0:
             # Hutang berlaku jika sisa kurang dari 0 (-negatif)
@@ -49,15 +50,15 @@ class PembayaranRepository:
 
         # Hutang tidak berlaku, dianggap lunas (Tunai)
         # jika sisa >= 0
-        return sisa
+        return 0
 
-    def get_paid_pembayaran(self, total):
+    def get_paid_pembayaran(self, pembayaran, total):
         if total == 0:
-            return True
+            return False
 
-        if total > 0:
-            return True
-        return False
+        if pembayaran.dibayar < total:
+            return False
+        return True
 
     def get_metode_pembayaran(self, sisa, total):
         if total == 0:
@@ -71,7 +72,7 @@ class PembayaranRepository:
         total = self.get_total_item(pembayaran)
         kembali = self.get_kembali_pembayaran(pembayaran, total)
         sisa = self.get_sisa_pembayaran(pembayaran, total)
-        is_paid = self.get_paid_pembayaran(total)
+        is_paid = self.get_paid_pembayaran(pembayaran, total)
         metode = self.get_metode_pembayaran(sisa, total)
 
         pembayaran.total = total
@@ -83,7 +84,6 @@ class PembayaranRepository:
 
 
 class ItemRepository:
-
     def get_subtotal(self, item):
         subtotal = (item['harga_supplier'] - item['diskon']) * item['jumlah']
         return subtotal if subtotal >= 0 else 0

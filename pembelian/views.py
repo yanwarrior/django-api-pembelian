@@ -116,3 +116,35 @@ def item_list(request, pk):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
+@transaction.atomic
+def item_detail(request, pk, item_pk):
+    try:
+        pembelian = Pembelian.objects.get(pk=pk)
+        item = Item.objects.get(pk=item_pk, pembelian=pembelian)
+    except Pembelian.DoesNotExist:
+        raise Http404
+    except Item.DoesNotExist:
+        raise Http404
+
+    if request.method == 'GET':
+        serializer = ItemSerializer(item)
+        return Response(serializer.data)
+
+    if request.method == 'PUT':
+        serializer = ItemSerializer(item, data=request.data)
+        if serializer.is_valid():
+            # Setelah item dari client valid, kalkukasi subtotalnya
+            subtotal = ItemService().get_subtotal(serializer.validated_data)
+            instance = serializer.save(subtotal=subtotal)
+            # Selanjutnya, update pembayaran
+            PembayaranService().update_pembayaran(pembelian.get_pembayaran_pembelian)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    if request.method == 'DELETE':
+        item.delete()
+        # Selanjutnya, update pembayaran
+        PembayaranService().update_pembayaran(pembelian.get_pembayaran_pembelian)
+        return Response(status=status.HTTP_204_NO_CONTENT)
