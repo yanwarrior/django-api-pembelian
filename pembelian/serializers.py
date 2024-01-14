@@ -17,10 +17,11 @@ class PembayaranSerializer(serializers.ModelSerializer):
         fields = ['id', 'nomor', 'pembelian',
                   'metode', 'diskon', 'ppn',
                   'total', 'is_paid', 'dibayar',
-                  'kembali', 'sisa',]
+                  'kembali', 'sisa', 'tempo',
+                  'tanggal_jatuh_tempo']
         read_only_fields = ['nomor', 'pembelian', 'metode',
                             'total', 'is_paid', 'kembali',
-                            'sisa']
+                            'sisa', 'tanggal_jatuh_tempo']
 
 
 class ItemSerializer(serializers.ModelSerializer):
@@ -29,4 +30,4 @@ class ItemSerializer(serializers.ModelSerializer):
         fields = ['id', 'barang', 'pembelian',
                   'diskon', 'harga_supplier', 'jumlah',
                   'subtotal', 'keterangan']
-        read_only_fields = ['subtotal',]
+        read_only_fields = ['subtotal', 'pembelian']

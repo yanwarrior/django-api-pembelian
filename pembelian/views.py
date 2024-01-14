@@ -34,7 +34,9 @@ def pembelian_list(request):
         if serializer.is_valid():
             instance = serializer.save()
             # Setelah pembelian berhasil, buat objek pembayaran
-            PembayaranService().create_pembayaran_after_make_pembelian(instance)
+            pembayaran = PembayaranService().create_pembayaran_after_make_pembelian(instance)
+            # Kalkulasi pembayaran
+            PembayaranService().update_pembayaran(pembayaran)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -56,6 +58,8 @@ def pembelian_detail(request, pk):
         serializer = PembelianSerializer(pembelian, data=request.data)
         if serializer.is_valid():
             serializer.save()
+            # Kalkulasi pembayaran
+            PembayaranService().update_pembayaran(pembelian.get_pembayaran_pembelian)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -72,6 +76,8 @@ def pembelian_complete(request, pk):
     pembelian.is_published = True
     pembelian.save()
     serializer = PembelianSerializer(pembelian)
+    # Kalkulasi pembayaran
+    PembayaranService().update_pembayaran(pembelian.get_pembayaran_pembelian)
 
     return Response(serializer.data)
 
@@ -126,7 +132,7 @@ def item_list(request, pk):
         if serializer.is_valid():
             # Setelah item dari client valid, kalkukasi subtotalnya
             subtotal = ItemService().get_subtotal(serializer.validated_data)
-            instance = serializer.save(subtotal=subtotal)
+            instance = serializer.save(subtotal=subtotal, pembelian=pembelian)
             # Selanjutnya, update pembayaran
             PembayaranService().update_pembayaran(instance.pembelian.get_pembayaran_pembelian)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -154,7 +160,7 @@ def item_detail(request, pk, item_pk):
         if serializer.is_valid():
             # Setelah item dari client valid, kalkukasi subtotalnya
             subtotal = ItemService().get_subtotal(serializer.validated_data)
-            instance = serializer.save(subtotal=subtotal)
+            instance = serializer.save(subtotal=subtotal, pembelian=pembelian)
             # Selanjutnya, update pembayaran
             PembayaranService().update_pembayaran(pembelian.get_pembayaran_pembelian)
             return Response(serializer.data)

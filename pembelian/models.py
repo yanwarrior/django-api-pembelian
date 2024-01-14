@@ -34,6 +34,7 @@ class Pembayaran(models.Model):
     kembali = models.PositiveIntegerField()
     sisa = models.PositiveIntegerField(default=0)
     tempo = models.PositiveIntegerField(default=1)
+    tanggal_jatuh_tempo = models.DateField(blank=True, null=True)
 
     def __str__(self):
         return self.pembelian.nomor

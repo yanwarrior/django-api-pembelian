@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from mysite.helpers import generate_nomor
 from pembelian.models import Pembayaran, Item
 
@@ -7,10 +9,9 @@ class PembayaranRepository:
         nomor_generator = generate_nomor("PBR", Pembayaran.objects.all())
         return Pembayaran.objects.create(pembelian=pembelian, nomor=nomor_generator,
                                          diskon=0, ppn=0,
-                                         total_ppn_discount=0, total=0,
-                                         is_paid=False, dibayar=0,
-                                         kembali=0, sisa=0,
-                                         tempo=0)
+                                         total=0, is_paid=False,
+                                         dibayar=0, kembali=0,
+                                         sisa=0, tempo=0)
 
     def get_total_item(self, pembayaran):
         total = 0
@@ -21,7 +22,7 @@ class PembayaranRepository:
                 total = total + item.subtotal
 
         if total:
-            total_diskon = total - pembayaran.diskon
+            total_diskon = total * (pembayaran.diskon / 100)
             total_ppn = total_diskon * (pembayaran.ppn / 100)
             total = total_ppn + total_diskon
 
@@ -68,18 +69,32 @@ class PembayaranRepository:
             return Pembayaran.KREDIT
         return Pembayaran.TUNAI
 
+    def get_jatuh_tempo(self, pembayaran, status):
+        if status == Pembayaran.KREDIT:
+            return pembayaran.pembelian.tanggal.date() + timedelta(days=pembayaran.tempo)
+        return None
+
+    def get_tempo(self, status, current_tempo):
+        if status == Pembayaran.KREDIT:
+            return current_tempo
+        return 0
+
     def update_pembayaran(self, pembayaran):
         total = self.get_total_item(pembayaran)
         kembali = self.get_kembali_pembayaran(pembayaran, total)
         sisa = self.get_sisa_pembayaran(pembayaran, total)
         is_paid = self.get_paid_pembayaran(pembayaran, total)
         metode = self.get_metode_pembayaran(sisa, total)
+        tanggal_jatuh_tempo = self.get_jatuh_tempo(pembayaran, metode)
+        tempo = self.get_tempo(metode, pembayaran.tempo)
 
         pembayaran.total = total
         pembayaran.kembali = kembali
         pembayaran.sisa = sisa
         pembayaran.is_paid = is_paid
         pembayaran.metode = metode
+        pembayaran.tanggal_jatuh_tempo = tanggal_jatuh_tempo
+        pembayaran.tempo = tempo
         return pembayaran.save()
 
 class ItemRepository:
