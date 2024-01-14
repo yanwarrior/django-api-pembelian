@@ -8,6 +8,7 @@ from rest_framework.response import Response
 
 from pembelian.filters import PembelianFilter, ItemFilter
 from pembelian.models import Pembelian, Pembayaran, Item
+from pembelian.permissions import AllowUnpublishedPermission, PreventPublishedPermission
 from pembelian.serializers import PembelianSerializer, PembayaranSerializer, ItemSerializer
 from pembelian.services import PembayaranService, ItemService
 
@@ -39,7 +40,7 @@ def pembelian_list(request):
 
 
 @api_view(['GET', 'PUT'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, PreventPublishedPermission])
 @transaction.atomic
 def pembelian_detail(request, pk):
     try:
@@ -59,8 +60,24 @@ def pembelian_detail(request, pk):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, AllowUnpublishedPermission])
+@transaction.atomic
+def pembelian_complete(request, pk):
+    try:
+        pembelian = Pembelian.objects.get(pk=pk)
+    except Pembelian.DoesNotExist:
+        raise Http404
+
+    pembelian.is_published = True
+    pembelian.save()
+    serializer = PembelianSerializer(pembelian)
+
+    return Response(serializer.data)
+
+
 @api_view(['GET', 'PUT'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, PreventPublishedPermission])
 @transaction.atomic
 def pembayaran_detail(request, pk):
     try:
@@ -84,7 +101,7 @@ def pembayaran_detail(request, pk):
 
 
 @api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, PreventPublishedPermission])
 @transaction.atomic
 def item_list(request, pk):
     try:
@@ -117,7 +134,7 @@ def item_list(request, pk):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, PreventPublishedPermission])
 @transaction.atomic
 def item_detail(request, pk, item_pk):
     try:

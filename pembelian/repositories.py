@@ -82,7 +82,6 @@ class PembayaranRepository:
         pembayaran.metode = metode
         return pembayaran.save()
 
-
 class ItemRepository:
     def get_subtotal(self, item):
         subtotal = (item['harga_supplier'] - item['diskon']) * item['jumlah']
