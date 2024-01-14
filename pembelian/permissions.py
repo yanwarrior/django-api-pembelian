@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
-from pembelian.models import Item, Pembelian
+from pembelian.models import Item, Pembelian, Pembayaran
 
 
 class PreventPublishedPermission(permissions.BasePermission):
@@ -38,4 +38,20 @@ class AllowUnpublishedPermission(permissions.BasePermission):
 
             return True
         except Exception as e:
+            return False
+
+
+class PreventTunaiPermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        try:
+            pk = view.kwargs.get('pk', None)
+            pembayaran_pk = view.kwargs.get('pembayaran_pk', None)
+            pembayaran = Pembayaran.objects.get(pembelian__pk=pk, pk=pembayaran_pk)
+
+            if pembayaran.metode == Pembayaran.TUNAI:
+                return False
+
+            return True
+
+        except Pembayaran.DoesNotExist:
             return False

@@ -6,10 +6,10 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from pembelian.filters import PembelianFilter, ItemFilter
-from pembelian.models import Pembelian, Pembayaran, Item
-from pembelian.permissions import AllowUnpublishedPermission, PreventPublishedPermission
-from pembelian.serializers import PembelianSerializer, PembayaranSerializer, ItemSerializer
+from pembelian.filters import PembelianFilter, ItemFilter, HutangFilter
+from pembelian.models import Pembelian, Pembayaran, Item, Hutang
+from pembelian.permissions import AllowUnpublishedPermission, PreventPublishedPermission, PreventTunaiPermission
+from pembelian.serializers import PembelianSerializer, PembayaranSerializer, ItemSerializer, HutangSerializer
 from pembelian.services import PembayaranService, ItemService
 
 
@@ -26,11 +26,11 @@ def pembelian_list(request):
             daftar_pembelian = filterset.qs
 
         result_page = paginator.paginate_queryset(daftar_pembelian, request)
-        serializer = PembelianSerializer(result_page, many=True)
+        serializer = PembelianSerializer(result_page, many=True, context={'request': request})
         return paginator.get_paginated_response(serializer.data)
 
     elif request.method == 'POST':
-        serializer = PembelianSerializer(data=request.data)
+        serializer = PembelianSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             instance = serializer.save()
             # Setelah pembelian berhasil, buat objek pembayaran
@@ -171,3 +171,28 @@ def item_detail(request, pk, item_pk):
         # Selanjutnya, update pembayaran
         PembayaranService().update_pembayaran(pembelian.get_pembayaran_pembelian)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated, PreventPublishedPermission, PreventTunaiPermission])
+@transaction.atomic
+def hutang_list(request, pk, pembayaran_pk):
+    try:
+        pembelian = Pembelian.objects.get(pk=pk)
+        pembayaran = Pembayaran.objects.get(pk=pembayaran_pk, pembelian=pembelian)
+    except Pembelian.DoesNotExist:
+        raise Http404
+    except Pembayaran.DoesNotExist:
+        raise Http404
+
+    if request.method == 'GET':
+        paginator = PageNumberPagination()
+        daftar_hutang = Hutang.objects.filter(pembelian=pembelian, pembayaran=pembayaran)
+        filterset = HutangFilter(request.GET, queryset=daftar_hutang)
+
+        if filterset.is_valid():
+            daftar_hutang = filterset.qs
+
+        result_page = paginator.paginate_queryset(daftar_hutang, request)
+        serializer = HutangSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)

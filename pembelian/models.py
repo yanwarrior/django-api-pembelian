@@ -3,7 +3,6 @@ from django.db import models
 from barang.models import Barang
 from supplier.models import Supplier
 
-
 class Pembelian(models.Model):
     nomor = models.CharField(max_length=10, unique=True)
     tanggal = models.DateTimeField()
@@ -51,3 +50,15 @@ class Item(models.Model):
 
     def __str__(self):
         return self.pembelian.nomor
+
+
+class Hutang(models.Model):
+    nomor = models.CharField(max_length=10, unique=True)
+    pembelian = models.ForeignKey(Pembelian, on_delete=models.CASCADE)
+    pembayaran = models.ForeignKey(Pembayaran, on_delete=models.CASCADE)
+    tanggal = models.DateField()
+    jumlah = models.PositiveIntegerField()
+    sisa = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.nomor

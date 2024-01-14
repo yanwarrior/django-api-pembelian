@@ -1,6 +1,6 @@
 import django_filters
 
-from pembelian.models import Pembelian, Item
+from pembelian.models import Pembelian, Item, Hutang
 
 
 class PembelianFilter(django_filters.FilterSet):
@@ -20,4 +20,14 @@ class ItemFilter(django_filters.FilterSet):
         fields = {
             'barang': ['exact'],
             'pembelian': ['exact']
+        }
+
+
+class HutangFilter(django_filters.FilterSet):
+    class Meta:
+        model = Hutang
+        fields = {
+            'nomor': ['contains'],
+            'jumlah': ['contains'],
+            'sisa': ['contains'],
         }
