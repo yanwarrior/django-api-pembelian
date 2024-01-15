@@ -2,18 +2,29 @@ from django.db import transaction
 from django.http import Http404
 from rest_framework import status
 from rest_framework.decorators import permission_classes, api_view
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from pembelian.filters import PembelianFilter, ItemFilter, HutangFilter
 from pembelian.models import Pembelian, Pembayaran, Item, Hutang
-from pembelian.permissions import AllowUnpublishedPermission, PreventPublishedPermission, PreventTunaiPermission
+from pembelian.permissions import AllowUnpublishedPermission, PreventPublishedPermission, OnlyKreditPermission, \
+    OnlyPublishedPermission, OnlyDraftPermission
 from pembelian.serializers import PembelianSerializer, PembayaranSerializer, ItemSerializer, HutangSerializer
-from pembelian.services import PembayaranService, ItemService
+from pembelian.services import PembayaranService, ItemService, HutangService, PembelianService
 
 
-@api_view(['GET', 'POST'])
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@transaction.atomic
+def pembelian_init(request):
+    pembelian = PembelianService.factory().init_pembelian()
+    serializer = PembelianSerializer(pembelian)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 @transaction.atomic
 def pembelian_list(request):
@@ -29,20 +40,9 @@ def pembelian_list(request):
         serializer = PembelianSerializer(result_page, many=True, context={'request': request})
         return paginator.get_paginated_response(serializer.data)
 
-    elif request.method == 'POST':
-        serializer = PembelianSerializer(data=request.data, context={'request': request})
-        if serializer.is_valid():
-            instance = serializer.save()
-            # Setelah pembelian berhasil, buat objek pembayaran
-            pembayaran = PembayaranService().create_pembayaran_after_make_pembelian(instance)
-            # Kalkulasi pembayaran
-            PembayaranService().update_pembayaran(pembayaran)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 @api_view(['GET', 'PUT'])
-@permission_classes([IsAuthenticated, PreventPublishedPermission])
+@permission_classes([IsAuthenticated])
 @transaction.atomic
 def pembelian_detail(request, pk):
     try:
@@ -55,17 +55,18 @@ def pembelian_detail(request, pk):
         return Response(serializer.data)
 
     if request.method == 'PUT':
+        # Pembelian yang statusnya sudah dipublikasikan tidak diizinkan/harus dicegah
+        PembelianService.factory().cegat_publikasi(pembelian)
+
         serializer = PembelianSerializer(pembelian, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            # Kalkulasi pembayaran
-            PembayaranService().update_pembayaran(pembelian.get_pembayaran_pembelian)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated, AllowUnpublishedPermission])
+@permission_classes([IsAuthenticated])
 @transaction.atomic
 def pembelian_complete(request, pk):
     try:
@@ -73,17 +74,22 @@ def pembelian_complete(request, pk):
     except Pembelian.DoesNotExist:
         raise Http404
 
+    # Validate pembelian apakah sudah memenuhi syarat atau belum
+    PembelianService.factory().validate_complete(pembelian)
+
     pembelian.is_published = True
     pembelian.save()
     serializer = PembelianSerializer(pembelian)
     # Kalkulasi pembayaran
     PembayaranService().update_pembayaran(pembelian.get_pembayaran_pembelian)
+    # Create hutang
+    HutangService.factory().create_hutang(pembayaran=pembelian.get_pembayaran_pembelian)
 
     return Response(serializer.data)
 
 
 @api_view(['GET', 'PUT'])
-@permission_classes([IsAuthenticated, PreventPublishedPermission])
+@permission_classes([IsAuthenticated])
 @transaction.atomic
 def pembayaran_detail(request, pk):
     try:
@@ -96,6 +102,8 @@ def pembayaran_detail(request, pk):
         return Response(serializer.data)
 
     if request.method == 'PUT':
+        # Cegat pembelian yang sudah terpublikasi
+        PembelianService().cegat_publikasi(pembayaran.pembelian)
         serializer = PembayaranSerializer(pembayaran, data=request.data)
         if serializer.is_valid():
             instance = serializer.save()
@@ -107,7 +115,7 @@ def pembayaran_detail(request, pk):
 
 
 @api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated, PreventPublishedPermission])
+@permission_classes([IsAuthenticated])
 @transaction.atomic
 def item_list(request, pk):
     try:
@@ -128,6 +136,9 @@ def item_list(request, pk):
         return paginator.get_paginated_response(serializer.data)
 
     if request.method == 'POST':
+        # Cegat pembelian yang sudah terpublikasi
+        PembelianService().cegat_publikasi(pembelian)
+
         serializer = ItemSerializer(data=request.data)
         if serializer.is_valid():
             # Setelah item dari client valid, kalkukasi subtotalnya
@@ -174,7 +185,7 @@ def item_detail(request, pk, item_pk):
 
 
 @api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated, PreventPublishedPermission, PreventTunaiPermission])
+@permission_classes([IsAuthenticated, OnlyPublishedPermission, OnlyKreditPermission])
 @transaction.atomic
 def hutang_list(request, pk, pembayaran_pk):
     try:
@@ -196,3 +207,41 @@ def hutang_list(request, pk, pembayaran_pk):
         result_page = paginator.paginate_queryset(daftar_hutang, request)
         serializer = HutangSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
+
+    if request.method == 'POST':
+        serializer = HutangSerializer(data=request.data)
+
+        if serializer.is_valid():
+            hutang = serializer.save(
+                pembayaran=pembayaran,
+                pembelian=pembelian,
+                sisa=0
+            )
+            # HutangService().bayar_hutang(pembayaran, hutang)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
+@transaction.atomic
+def hutang_detail(request, pk):
+    try:
+        pembelian = Pembelian.objects.get(pk=pk)
+        hutang = Hutang.objects.get(pembelian=pembelian)
+    except Pembelian.DoesNotExist:
+        raise Http404
+    except Hutang.DoesNotExist:
+        raise Http404
+
+    if request.method == 'GET':
+        serializer = HutangSerializer(hutang)
+        return Response(serializer.data)
+
+    if request.method == 'PUT':
+        serializer = HutangSerializer(hutang, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            HutangService().factory().bayar_hutang(hutang)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

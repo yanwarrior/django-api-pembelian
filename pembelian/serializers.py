@@ -4,6 +4,7 @@ from pembelian.models import Pembelian, Pembayaran, Item, Hutang
 
 
 class PembayaranSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Pembayaran
         fields = ['id', 'nomor', 'pembelian',
@@ -17,6 +18,7 @@ class PembayaranSerializer(serializers.ModelSerializer):
 
 
 class ItemSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Item
         fields = ['id', 'barang', 'pembelian',
@@ -28,30 +30,37 @@ class ItemSerializer(serializers.ModelSerializer):
 class HutangSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hutang
-        fields = ['id', 'nomor', 'pembelian',
-                  'pembayaran', 'tanggal', 'jumlah',
-                  'sisa']
-        read_only_fields = ['pembelian', 'pembayaran', 'sisa']
+        fields = [
+            'id',
+            'nomor',
+            'pembelian',
+            'pembayaran',
+            'tanggal',
+            'jumlah',
+            'sisa'
+        ]
+        read_only_fields = ['pembelian', 'pembayaran', 'sisa',]
 
 
 class PembelianSerializer(serializers.ModelSerializer):
-    meta_pembayaran = serializers.SerializerMethodField('get_pembayaran')
+    _pembayaran_metode = serializers.SerializerMethodField("get_pembayaran_metode")
+    _pembayaran_is_paid = serializers.SerializerMethodField("get_pembayaran_is_paid")
 
-    def get_pembayaran(self, value: Pembelian):
-        pembayaran = value.get_pembayaran_pembelian
-        return {'id': pembayaran.id, 'nomor': pembayaran.nomor,
-                'metode': pembayaran.metode, 'diskon': pembayaran.diskon,
-                'ppn': pembayaran.ppn, 'total': pembayaran.total,
-                'is_paid': pembayaran.is_paid, 'dibayar': pembayaran.dibayar,
-                'kembali': pembayaran.kembali, 'sisa': pembayaran.sisa,
-                'tempo': pembayaran.tempo, 'tanggal_jatuh_tempo': pembayaran.tanggal_jatuh_tempo,
-                'hutang': pembayaran.hutang_set.all()}
+    def get_pembayaran_metode(self, value: Pembelian):
+        return value.get_pembayaran_pembelian.metode
+
+    def get_pembayaran_is_paid(self, value: Pembelian):
+        return value.get_pembayaran_pembelian.is_paid
 
     class Meta:
         model = Pembelian
-        fields = ['id', 'nomor',
-                  'tanggal', 'supplier',
-                  'is_published', 'meta_pembayaran']
+        fields = ['id',
+                  'nomor',
+                  'tanggal',
+                  'supplier',
+                  'is_published',
+                  '_pembayaran_metode',
+                  '_pembayaran_is_paid']
         read_only_fields = ['is_published']
 
 

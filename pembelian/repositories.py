@@ -1,7 +1,42 @@
 from datetime import timedelta
 
+from django.db.models.functions import datetime
+from rest_framework.exceptions import PermissionDenied
+
 from mysite.helpers import generate_nomor
-from pembelian.models import Pembayaran, Item
+from pembelian.models import Pembayaran, Item, Pembelian, Hutang
+from supplier.services import SupplierService
+
+
+class PembelianRepository:
+
+    def init_pembelian(self):
+        supplier, status = SupplierService().get_or_create_supplier()
+        pembelian = Pembelian.objects.create(
+            nomor=generate_nomor("BLI", Pembelian.objects.all()),
+            tanggal=datetime.datetime.now(),
+            supplier=supplier
+        )
+        PembayaranRepository().create_pembayaran(pembelian)
+        return pembelian
+
+    def cegat_draft(self, pembelian):
+        if not pembelian.is_published:
+            raise PermissionDenied("Proses tidak diizinkan, pembelian masih dalam bentuk draft.")
+
+    def cegat_publikasi(self, pembelian):
+        if pembelian.is_published:
+            raise PermissionDenied("Proses tidak diizinkan, pembelian sudah terpublikasi.")
+
+    def validate_complete(self, pembelian: Pembelian):
+        self.cegat_publikasi(pembelian)
+        ItemRepository().pembelian_has_items(pembelian)
+        if pembelian.get_pembayaran_pembelian.dibayar == 0:
+            raise PermissionDenied("Proses tidak diziinkan, pembelian belum dibayar.")
+
+        if pembelian.get_pembayaran_pembelian.metode == Pembayaran.KREDIT and \
+                pembelian.get_pembayaran_pembelian.tempo == 0:
+            raise PermissionDenied("Proses tidak diziinkan, jatuh tempo pembayaran belum diatur.")
 
 
 class PembayaranRepository:
@@ -13,7 +48,7 @@ class PembayaranRepository:
 
         return total
 
-    def create_pembayaran_after_make_pembelian(self, pembelian):
+    def create_pembayaran(self, pembelian):
         nomor_generator = generate_nomor("PBR", Pembayaran.objects.all())
         return Pembayaran.objects.create(pembelian=pembelian, nomor=nomor_generator,
                                          diskon=0, ppn=0,
@@ -73,6 +108,9 @@ class PembayaranRepository:
         return Pembayaran.TUNAI
 
     def get_jatuh_tempo(self, pembayaran, status):
+        if pembayaran.tempo == 0:
+            return None
+
         if status == Pembayaran.KREDIT:
             return pembayaran.pembelian.tanggal.date() + timedelta(days=pembayaran.tempo)
         return None
@@ -100,9 +138,42 @@ class PembayaranRepository:
         pembayaran.tempo = tempo
         return pembayaran.save()
 
+
+
 class ItemRepository:
+
     def get_subtotal(self, item):
         subtotal = (item['harga_supplier'] - item['diskon']) * item['jumlah']
         return subtotal if subtotal >= 0 else 0
 
+    def pembelian_has_items(self, pembelian):
+        if not Item.objects.filter(pembelian=pembelian).exists():
+            raise PermissionDenied(detail='Pembelian tidak memiliki items.')
+
+
+class HutangRepository:
+
+    def create_hutang(self, pembayaran: Pembayaran):
+        if pembayaran.metode == Pembayaran.KREDIT:
+            return Hutang.objects.create(
+                nomor=generate_nomor("HTG", Hutang.objects.all()),
+                pembelian=pembayaran.pembelian,
+                pembayaran=pembayaran,
+                tanggal=pembayaran.pembelian.tanggal + timedelta(days=pembayaran.tempo),
+                jumlah=0,
+                sisa=pembayaran.sisa,
+            )
+
+    def bayar_hutang(self, hutang):
+        pembayaran = hutang.pembayaran
+        sisa = hutang.sisa - hutang.jumlah
+
+        if sisa <= 0:
+            pembayaran.is_paid = True
+            pembayaran.save()
+            hutang.sisa = 0
+        else:
+            hutang.sisa = sisa
+
+        hutang.save()
 

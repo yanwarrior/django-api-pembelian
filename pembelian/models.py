@@ -7,7 +7,8 @@ from supplier.models import Supplier
 class Pembelian(models.Model):
     nomor = models.CharField(max_length=10, unique=True)
     tanggal = models.DateTimeField()
-    supplier = models.ForeignKey(Supplier, related_name='populate_pembelian_supplier',
+    supplier = models.ForeignKey(Supplier,
+                                 related_name='populate_pembelian_supplier',
                                  on_delete=models.CASCADE)
     is_published = models.BooleanField(default=False)
 
@@ -60,8 +61,8 @@ class Item(models.Model):
 
 class Hutang(models.Model):
     nomor = models.CharField(max_length=10, unique=True)
-    pembelian = models.ForeignKey(Pembelian, on_delete=models.CASCADE)
-    pembayaran = models.ForeignKey(Pembayaran, on_delete=models.CASCADE)
+    pembelian = models.OneToOneField(Pembelian, on_delete=models.CASCADE)
+    pembayaran = models.OneToOneField(Pembayaran, on_delete=models.CASCADE)
     tanggal = models.DateField()
     jumlah = models.PositiveIntegerField()
     sisa = models.PositiveIntegerField()

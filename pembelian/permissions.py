@@ -3,6 +3,37 @@ from rest_framework import permissions
 from pembelian.models import Item, Pembelian, Pembayaran
 
 
+class OnlyPublishedPermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.method == 'GET':
+            return True
+
+        try:
+            pk = view.kwargs.get('pk', None)
+            pembelian = Pembelian.objects.get(pk=pk)
+            if pembelian.is_published:
+                return True
+
+            return False
+        except Pembelian.DoesNotExist:
+            return False
+
+
+class OnlyDraftPermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.method == 'GET':
+            return True
+
+        pk = view.kwargs.get('pk', None)
+        pembelian = Pembelian.objects.get(pk=pk)
+        if pembelian.is_published:
+            return False
+
+        return True
+        # try:
+        # except Pembelian.DoesNotExist:
+        #     return False
+
 class PreventPublishedPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method == 'GET':
@@ -41,7 +72,7 @@ class AllowUnpublishedPermission(permissions.BasePermission):
             return False
 
 
-class PreventTunaiPermission(permissions.BasePermission):
+class OnlyKreditPermission(permissions.BasePermission):
     def has_permission(self, request, view):
 
         try:
@@ -49,10 +80,10 @@ class PreventTunaiPermission(permissions.BasePermission):
             pembayaran_pk = view.kwargs.get('pembayaran_pk', None)
             pembayaran = Pembayaran.objects.get(pembelian__pk=pk, pk=pembayaran_pk)
 
-            if pembayaran.metode == Pembayaran.TUNAI:
-                return False
+            if pembayaran.metode == Pembayaran.KREDIT:
+                return True
 
-            return True
+            return False
 
         except Pembayaran.DoesNotExist:
             return False

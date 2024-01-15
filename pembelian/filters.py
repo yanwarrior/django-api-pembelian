@@ -27,7 +27,6 @@ class HutangFilter(django_filters.FilterSet):
     class Meta:
         model = Hutang
         fields = {
-            'nomor': ['contains'],
             'jumlah': ['contains'],
             'sisa': ['contains'],
         }
