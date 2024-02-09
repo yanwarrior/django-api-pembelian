@@ -7,8 +7,9 @@ class SupplierFilter(django_filters.FilterSet):
     class Meta:
         model = Supplier
         fields = {
+            "nomor": ['exact'],
             'nama': ['contains'],
             "telepon": ['exact'],
             "bank": ['exact'],
-            "pic": ['contains']
+            "contact_person": ['contains']
         }

@@ -1,23 +1,21 @@
+from django.db.models import Q
 from django.http import Http404
-from django.shortcuts import render
-from rest_framework import generics, status
+from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from barang.filters import BarangFilter
-from barang.helpers import generate_nomor
+from barang.filters import BarangFilter, BarangSearch
 from barang.models import Barang
 from barang.serializers import BarangSerializer
-
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def barang_list(request):
     if request.method == 'GET':
         paginator = PageNumberPagination()
-        daftar_barang = Barang.objects.all()
+        daftar_barang = Barang.objects.filter(BarangSearch.query(request))
         filterset = BarangFilter(request.GET, queryset=daftar_barang)
         if filterset.is_valid():
             daftar_barang = filterset.qs
@@ -58,5 +56,13 @@ def barang_detail(request, id):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def barang_number(request):
-    return Response({"detail": generate_nomor("BRG", Barang.objects.all())})
+def barang_choice(request, nomor):
+    try:
+        barang = Barang.objects.get(nomor=nomor)
+    except Barang.DoesNotExist:
+        raise Http404
+
+    serializer = BarangSerializer(barang)
+    return Response(serializer.data)
+
+

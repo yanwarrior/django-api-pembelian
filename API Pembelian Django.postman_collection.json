@@ -1,0 +1,1284 @@
+{
+	"info": {
+		"_postman_id": "6eca0226-f2e4-465a-ace2-6907ccd38e6b",
+		"name": "API Pembelian Django",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2170211"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Sign In",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"admin\",\r\n  \"password\": \"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/user/signin/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"user",
+								"signin",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Barang",
+			"item": [
+				{
+					"name": "List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/barang/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"barang",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nomor\": \"BRG0004\",\r\n  \"nama\": \"Barang Tiga\",\r\n  \"jenis\": \"Barang\",\r\n  \"satuan\": \"Liter\",\r\n  \"harga_beli\": 23000,\r\n  \"harga_jual\": 33000,\r\n  \"stok\": 40\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/barang/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"barang",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Detail",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nomor\": \"BRG0003\",\r\n  \"nama\": \"Barang Tiga\",\r\n  \"jenis\": \"Barang\",\r\n  \"satuan\": \"Liter\",\r\n  \"harga_beli\": 23000,\r\n  \"harga_jual\": 33000,\r\n  \"stok\": 40\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/barang/1/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"barang",
+								"1",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nomor\": \"BRG003A\",\r\n  \"nama\": \"Barang A Tiga\",\r\n  \"jenis\": \"Barang\",\r\n  \"satuan\": \"Liter\",\r\n  \"harga_beli\": 23000,\r\n  \"harga_jual\": 33000,\r\n  \"stok\": 40\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/barang/3/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"barang",
+								"3",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/barang/3/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"barang",
+								"3",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Choice",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/barang/BRG0001/choice/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"barang",
+								"BRG0001",
+								"choice",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Supplier",
+			"item": [
+				{
+					"name": "List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/supplier/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"supplier",
+								""
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "122",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nomor\": \"SPL0003\",\r\n  \"nama\": \"PT. Supplier Tiga\",\r\n  \"alamat\": \"Jl. Supplier Tiga, No 03\",\r\n  \"telepon\": \"08952237833\",\r\n  \"bank\": \"BRI\",\r\n  \"rekening\": \"1145633\",\r\n  \"contact_person\": \"Pak Sup Tiga\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/supplier/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"supplier",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Detail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/supplier/3/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"supplier",
+								"3",
+								""
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "122",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nomor\": \"SPL00A3\",\r\n  \"nama\": \"PT. Supplier A Tiga\",\r\n  \"alamat\": \"Jl. Supplier A Tiga, No A3\",\r\n  \"telepon\": \"08952237833\",\r\n  \"bank\": \"BRI\",\r\n  \"rekening\": \"1145633\",\r\n  \"contact_person\": \"Pak Sup Tiga\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/supplier/3/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"supplier",
+								"3",
+								""
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "122",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/supplier/3/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"supplier",
+								"3",
+								""
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "122",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Choice",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/supplier/SPL0002/choice/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"supplier",
+								"SPL0002",
+								"choice",
+								""
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "122",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pembelian",
+			"item": [
+				{
+					"name": "List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/pembelian/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"pembelian",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/pembelian/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"pembelian",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Detail Pembelian",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/pembelian/9/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"pembelian",
+								"9",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nomor\": \"PMB0001\",\r\n  \"tanggal\": \"2024-01-12\",\r\n  \"supplier\": 1,\r\n  \"is_published\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/pembelian/4/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"pembelian",
+								"4",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Publish",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/pembelian/11/publish/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"pembelian",
+								"11",
+								"publish",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pembayaran",
+			"item": [
+				{
+					"name": "Detail Pembayaran",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/pembelian/3/pembayaran/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"pembelian",
+								"3",
+								"pembayaran",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Pembayaran",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"diskon\": 10,\r\n  \"ppn\": 11,\r\n  \"dibayar\": 50000,\r\n  \"tempo\": 4\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/pembelian/2/pembayaran/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"pembelian",
+								"2",
+								"pembayaran",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Item",
+			"item": [
+				{
+					"name": "List Item",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/pembelian/3/items/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"pembelian",
+								"3",
+								"items",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Item",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"barang\": 1,\r\n  \"diskon\": 0,\r\n  \"harga\": 20000,\r\n  \"quantity\": 4\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/pembelian/9/items/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"pembelian",
+								"9",
+								"items",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Detail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/pembelian/3/items/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"pembelian",
+								"3",
+								"items",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Item",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"barang\": 4,\r\n  \"pembelian\": 3,\r\n  \"diskon\": 0,\r\n  \"harga_supplier\": 30000,\r\n  \"jumlah\": 3,\r\n  \"keterangan\": \"-\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/pembelian/3/items/2/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"pembelian",
+								"3",
+								"items",
+								"2",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Item",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/pembelian/3/items/2/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"pembelian",
+								"3",
+								"items",
+								"2",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Hutang",
+			"item": [
+				{
+					"name": "Detail Hutang",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/pembelian/1/hutang/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"pembelian",
+								"1",
+								"hutang",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Hutang",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nomor\": \"HTG0001\",\r\n  \"tanggal\": \"2024-01-19\",\r\n  \"jumlah\": 19920\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/pembelian/2/hutang/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"pembelian",
+								"2",
+								"hutang",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Stok",
+			"item": [
+				{
+					"name": "List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/stok",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"stok"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Retur Pembelian",
+			"item": [
+				{
+					"name": "List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/pembelian/11/retur/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"pembelian",
+								"11",
+								"retur",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/pembelian/11/retur/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"pembelian",
+								"11",
+								"retur",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Detail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/pembelian/11/retur/7/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"pembelian",
+								"11",
+								"retur",
+								"7",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"tanggal\": \"2024-01-26\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/pembelian/11/retur/4/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"pembelian",
+								"11",
+								"retur",
+								"4",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Publish",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"tanggal\": \"2024-01-26\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/pembelian/10/retur/7/published/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"pembelian",
+								"10",
+								"retur",
+								"7",
+								"published",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"tanggal\": \"2024-01-26\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/pembelian/11/retur/5/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"pembelian",
+								"11",
+								"retur",
+								"5",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Retur Item Pembelian",
+			"item": [
+				{
+					"name": "List",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Detail",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"quantity\": 200\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/pembelian/11/retur/6/items/10/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"pembelian",
+								"11",
+								"retur",
+								"6",
+								"items",
+								"10",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

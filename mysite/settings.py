@@ -13,6 +13,8 @@ from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+import rest_framework.exceptions
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -31,20 +33,20 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'drf_yasg',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 'django_extensions',
     'django_filters',
-    'rest_framework_swagger',
     'rest_framework',
     'rest_framework_simplejwt',
     'barang.apps.BarangConfig',
     'supplier.apps.SupplierConfig',
     'pembelian.apps.PembelianConfig',
+    'stok.apps.StokConfig',
 ]
 
 MIDDLEWARE = [
@@ -112,13 +114,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'id-id'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Jakarta'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -156,4 +158,4 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
 ]
 
-
+handler500 = 'rest_framework.exceptions.server_error'
