@@ -5,7 +5,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from supplier.filters import SupplierFilter
+from supplier.filters import SupplierFilter, SupplierSearch
 from supplier.models import Supplier
 from supplier.serializers import SupplierSerializer
 
@@ -15,7 +15,7 @@ from supplier.serializers import SupplierSerializer
 def supplier_list(request):
     if request.method == 'GET':
         paginator = PageNumberPagination()
-        daftar_supplier = Supplier.objects.exclude(nama='No Supplier')
+        daftar_supplier = Supplier.objects.exclude(nama='No Supplier').filter(SupplierSearch.query(request))
         filterset = SupplierFilter(request.GET, queryset=daftar_supplier)
 
         if filterset.is_valid():
