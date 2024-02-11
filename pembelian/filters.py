@@ -1,4 +1,5 @@
 import django_filters
+from django.db.models import Q
 
 from pembelian.models import Pembelian, Item, Hutang, ReturPembelian, ReturItemPembelian
 
@@ -14,6 +15,14 @@ class PembelianFilter(django_filters.FilterSet):
             'supplier__telepon': ['contains', 'exact'],
             'supplier__contact_person': ['contains', 'exact']
         }
+
+class PembelianSearch:
+    @staticmethod
+    def query(request):
+        return Q(supplier__nama__contains=request.GET.get('search', '')) \
+               | Q(nomor__contains=request.GET.get('search', '')) \
+               | Q(supplier_nomor__contains=request.GET.get('search', ''))
+
 
 
 class ItemFilter(django_filters.FilterSet):
@@ -50,3 +59,5 @@ class ReturItemPembelianFilter(django_filters.FilterSet):
         fields = {
             'barang__nama': ['contains'],
         }
+
+

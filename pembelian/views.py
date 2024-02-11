@@ -6,7 +6,8 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from pembelian.filters import PembelianFilter, ItemFilter, ReturPembelianFilter, ReturItemPembelianFilter
+from pembelian.filters import PembelianFilter, ItemFilter, ReturPembelianFilter, ReturItemPembelianFilter, \
+    PembelianSearch
 from pembelian.helpers import pembelian_init, publish_pembelian, calculate_pembayaran, calculate_item, calculate_hutang, \
     stok_masuk_records, retur_pembelian_init, publish_retur_pembelian, stok_retur_records
 from pembelian.models import Pembelian, Pembayaran, Item, Hutang, ReturPembelian, ReturItemPembelian
@@ -20,7 +21,7 @@ from pembelian.serializers import PembelianSerializer, PembayaranSerializer, Ite
 def pembelian_list(request):
     if request.method == 'GET':
         paginator = PageNumberPagination()
-        daftar_pembelian = Pembelian.objects.all()
+        daftar_pembelian = Pembelian.objects.filter(PembelianSearch.query(request))
         filterset = PembelianFilter(request.GET, queryset=daftar_pembelian)
 
         if filterset.is_valid():
