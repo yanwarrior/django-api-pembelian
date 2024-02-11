@@ -21,7 +21,7 @@ class PembelianSearch:
     def query(request):
         return Q(supplier__nama__contains=request.GET.get('search', '')) \
                | Q(nomor__contains=request.GET.get('search', '')) \
-               | Q(supplier_nomor__contains=request.GET.get('search', ''))
+               | Q(supplier__nomor__contains=request.GET.get('search', ''))
 
 
 
